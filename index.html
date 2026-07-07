@@ -1454,21 +1454,14 @@ function update() {
     case 'right': newHead.x++; break;
   }
 
-  // Wall collision (with invincibility check)
-  const invincible = state.invincibleUntil > now;
-  if (!invincible && (newHead.x < 0 || newHead.x >= CONFIG.COLS || newHead.y < 0 || newHead.y >= CONFIG.ROWS)) {
-    gameOver();
-    return;
-  }
-  // Wrap around if invincible
-  if (invincible) {
-    if (newHead.x < 0) newHead.x = CONFIG.COLS - 1;
-    if (newHead.x >= CONFIG.COLS) newHead.x = 0;
-    if (newHead.y < 0) newHead.y = CONFIG.ROWS - 1;
-    if (newHead.y >= CONFIG.ROWS) newHead.y = 0;
-  }
+  // Wrap around edges — no wall death
+  if (newHead.x < 0) newHead.x = CONFIG.COLS - 1;
+  if (newHead.x >= CONFIG.COLS) newHead.x = 0;
+  if (newHead.y < 0) newHead.y = CONFIG.ROWS - 1;
+  if (newHead.y >= CONFIG.ROWS) newHead.y = 0;
 
-  // Self collision
+  // Self collision — only death condition (invincibility from catnip still protects)
+  const invincible = state.invincibleUntil > now;
   const selfCollision = state.snake.some((s, i) => i > 0 && s.x === newHead.x && s.y === newHead.y);
   if (!invincible && selfCollision) {
     gameOver();
